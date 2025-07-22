@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"goAuthExample/internal/auth"
-	"goAuthExample/internal/server"
+	"goAuthExample/pkg/auth"
+	"goAuthExample/pkg/server"
 	"log"
 	"net/http"
 	"os/signal"

@@ -2,8 +2,7 @@ package server
 
 import (
 	"fmt"
-	"goAuthExample/internal/auth"
-	"goAuthExample/internal/database"
+	"goAuthExample/pkg/database"
 	"net/http"
 	"os"
 	"strconv"
@@ -17,7 +16,6 @@ type Server struct {
 
 func NewServer() *http.Server {
 
-	auth.NewAuth()
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	NewServer := &Server{
 		port: port,

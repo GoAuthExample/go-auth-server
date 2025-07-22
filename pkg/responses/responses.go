@@ -1,7 +1,7 @@
-package server
+package responses
 
 import (
-	"goAuthExample/internal/database"
+	"goAuthExample/pkg/database"
 	"net/http"
 
 	"github.com/go-chi/render"

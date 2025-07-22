@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"goAuthExample/pkg/responses"
 	"log"
 	"net/http"
 
@@ -65,7 +66,7 @@ func (s *Server) getAuthCallbackFunction(w http.ResponseWriter, r *http.Request)
 
 		_, err := s.db.Login(&user)
 		if err != nil {
-			render.Render(w, r, ErrInvalidRequest(err))
+			render.Render(w, r, responses.ErrInvalidRequest(err))
 		}
 
 		session, err := gothic.Store.Get(r, "session")
@@ -109,7 +110,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Logout printing session: %v", session.Values)
-	render.Render(w, r, PostResponseRender("Logged out successfully"))
+	render.Render(w, r, responses.PostResponseRender("Logged out successfully"))
 }
 
 func (s *Server) fetchUserData(w http.ResponseWriter, r *http.Request) {
@@ -119,12 +120,12 @@ func (s *Server) fetchUserData(w http.ResponseWriter, r *http.Request) {
 	// It's not really necessary to make a DB call here but I'm just simulating an actual DB operation
 	user, err := s.db.GetUser(gothUser.UserID)
 	if err != nil {
-		render.Render(w, r, ErrServerError(err))
+		render.Render(w, r, responses.ErrServerError(err))
 		return
 	}
 
 	log.Printf("User JSON: %v", user)
-	render.Render(w, r, UserResponseRender(user))
+	render.Render(w, r, responses.UserResponseRender(user))
 
 	return
 }
@@ -134,12 +135,12 @@ func userMiddleware(next http.Handler) http.Handler {
 		s, err := gothic.Store.Get(r, "session")
 
 		if err != nil || s == nil || s.Values["user"] == nil {
-			render.Render(w, r, ErrInvalidRequest(fmt.Errorf("No user session")))
+			render.Render(w, r, responses.ErrInvalidRequest(fmt.Errorf("No user session")))
 			return
 		}
 
 		if s.Options.MaxAge < 0 {
-			render.Render(w, r, ErrInvalidRequest(fmt.Errorf("No user session")))
+			render.Render(w, r, responses.ErrInvalidRequest(fmt.Errorf("No user session")))
 			return
 		}
 
