@@ -2,28 +2,26 @@ package server
 
 import (
 	"fmt"
+	"goAuthExample/internal/auth"
+	"goAuthExample/internal/database"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
-
-	_ "github.com/joho/godotenv/autoload"
-
-	"goAuthExample/internal/database"
 )
 
 type Server struct {
 	port int
-
-	db database.Service
+	db   database.Service
 }
 
 func NewServer() *http.Server {
+
+	auth.NewAuth()
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	NewServer := &Server{
 		port: port,
-
-		db: database.New(),
+		db:   database.New(),
 	}
 
 	// Declare Server config

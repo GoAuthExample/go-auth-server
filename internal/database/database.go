@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/markbates/goth"
 )
 
 // Service represents a service that interacts with a database.
@@ -19,9 +20,20 @@ type Service interface {
 	// The keys and values in the map are service-specific.
 	Health() map[string]string
 
+	Login(*goth.User) (int64, error)
+
+	GetUser(string) (*User, error)
+
 	// Close terminates the database connection.
 	// It returns an error if the connection cannot be closed.
 	Close() error
+}
+
+type User struct {
+	UserID  int    `db:"user_id" json:"user_id"`
+	Email   string `db:"email" json:"email"`
+	Name    string `db:"user_name" json:"user_name"`
+	Picture string `db:"picture" json:"picture"`
 }
 
 type service struct {
@@ -58,6 +70,55 @@ func New() Service {
 		db: db,
 	}
 	return dbInstance
+}
+
+func (s *service) Login(user *goth.User) (int64, error) {
+	var userID int64
+	err := s.db.QueryRow("select user_id from users where auth_id = ?", user.UserID).Scan(&userID)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("Error fetching user")
+		return -1, err
+	}
+
+	if err == sql.ErrNoRows {
+		res, err := s.db.Exec("insert into users(auth_id, name, email, picture) values(?, ?, ?, ?)", user.UserID, user.Name, user.Email, user.AvatarURL)
+		if err != nil {
+			return -1, fmt.Errorf("Could not save user. Try again later")
+		}
+
+		lastID, err := res.LastInsertId()
+		if err != nil {
+			return -1, fmt.Errorf("could not retreive new user id. Try again later")
+		}
+
+		userID = lastID
+	}
+
+	log.Printf("user id %d", userID)
+	return userID, nil
+
+}
+
+func (s *service) GetUser(auth_id string) (*User, error) {
+	var user_id int
+	var name, email, picture string
+
+	err := s.db.QueryRow("select user_id, name, email, picture from blueprint.users where auth_id = ?", auth_id).Scan(&user_id, &name, &email, &picture)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("Error fetching user: %s", err)
+		return nil, err
+	}
+
+	user := &User{
+		UserID:  user_id,
+		Name:    name,
+		Email:   email,
+		Picture: picture,
+	}
+
+	log.Printf("User data: %v", user)
+	return user, nil
+
 }
 
 // Health checks the health of the database connection by pinging the database.

@@ -1,5 +1,6 @@
 services:
-  mysql_bp:
+  db:
+    container_name: "blueprint"
     image: mysql:latest
     restart: unless-stopped
     environment:
@@ -11,6 +12,8 @@ services:
       - "${BLUEPRINT_DB_PORT}:3306"
     volumes:
       - mysql_volume_bp:/var/lib/mysql
+      - ./internal/scripts/db.sql:/docker-entrypoint-initdb.d/0_init.sql
+
 
 volumes:
   mysql_volume_bp:

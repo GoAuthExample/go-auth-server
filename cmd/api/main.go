@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"goAuthExample/internal/auth"
+	"goAuthExample/internal/server"
 	"log"
 	"net/http"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"goAuthExample/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool) {
@@ -39,6 +39,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 
+	auth.NewAuth()
 	server := server.NewServer()
 
 	// Create a done channel to signal when the shutdown is complete
