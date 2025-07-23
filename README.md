@@ -25,10 +25,10 @@ A lightweight go server that handles OAuth login flows and database retrieval. I
    
    1. The OAuth screen returns back to the server endpoint with the Gothic user data
    2. Gothic user data is then saved into the DB if it doesn’t exist already
-   3. A new gothic session is created in a cookie store
+   3. A new gothic session is created in a cookie store stored on the server
 
       
-      1. This session cookie is also saved on the client
+      1. The session ID will also be saved in the client browser cookies
    4. The endpoint will then redirect the user to <http://localhost:8080/dashboard>
 3. Client app refreshes upon redirecting
 
