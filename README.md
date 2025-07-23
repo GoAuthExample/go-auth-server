@@ -11,6 +11,35 @@ A lightweight go server that handles OAuth login flows and database retrieval. I
 * Dockerized development environement
 
 
+## Workflow
+
+
+
+
+1. A client navigates to the `auth/{provider}/callback`  endpoint in the browser url
+
+   
+   1. They must use **google** as the provider name
+2. Server calls the [goth](https://github.com/markbates/goth?tab=readme-ov-file) method `CompleteUserAuth()` to begin the Open Authorization step with google sign in
+
+   
+   1. The OAuth screen returns back to the server endpoint with the Gothic user data
+   2. Gothic user data is then saved into the DB if it doesn’t exist already
+   3. A new gothic session is created in a cookie store
+
+      
+      1. This session cookie is also saved on the client
+   4. The endpoint will then redirect the user to <http://localhost:8080/dashboard>
+3. Client app refreshes upon redirecting
+
+   
+   1. The refresh will fetch the user’s data from the DB to display on the dashboard
+4. If the user logs out, they send an HTTP request to `auth/logout` which will invalidate the session cookie using the cookie metadata attached in the request’s headers
+
+   
+   1. If the logout response status is “ok”, the client app will return back the login page
+   2. You will also notice that the client’s session cookie is also deleted
+
 ## Project Structure
 
 * cmd/main.go - entry point that creates the server and gothic store
