@@ -6,7 +6,7 @@ A lightweight go server that handles OAuth login flows and database retrieval. I
 ## Features
 
 * Chi Router for routing capabilities
-* Open Authorization with Google as an Identity Provider using the Gothic package
+* Open Authorization (with Google as an Identity Provider) using the  [markbates/goth](https://github.com/markbates/goth?tab=readme-ov-file) package
 * Database service (MySQL) for storing user IdP data
 * Dockerized development environement
 
@@ -25,8 +25,6 @@ A lightweight go server that handles OAuth login flows and database retrieval. I
 * Makefile - commands to build, run, watch, test the application
 
 
----
-
 ## Environment Configuration
 
 Values in the `example.env` file are used to run the service. A select number of these variables can be overriden:
@@ -38,8 +36,6 @@ Values in the `example.env` file are used to run the service. A select number of
 > Make sure to rename example.env to .env
 
 
-
----
 
 ## Getting Started
 
